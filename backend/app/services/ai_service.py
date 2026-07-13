@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-client = Groq(api_key=os.getenv("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"))
+client = Groq(api_key="gsk_xxxxxxxxxxxxxxxxxxxxxxx")
 
 def generate_summary(full_name: str, raw_summary: str) -> str:
     prompt = f"""You are a professional resume writer. Based on the information below, 
