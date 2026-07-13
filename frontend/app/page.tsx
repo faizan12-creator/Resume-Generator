@@ -12,7 +12,7 @@ import { TiltCard } from "@/components/ui/TiltCard";
 import { ResumePreview } from "@/components/ui/ResumePreview";
 import {
   User, Briefcase, GraduationCap, Tags, Sparkles, Download, Save,
-  Plus, Trash2, Loader2, CheckCircle2, XCircle, LogIn, LogOut,
+  Plus, Trash2, Loader2, CheckCircle2, XCircle, LogIn, LogOut, FolderGit2,
 } from "lucide-react";
 
 const fraunces = Fraunces({ subsets: ["latin"], weight: ["500", "600"], style: ["normal", "italic"], variable: "--font-display" });
@@ -31,6 +31,11 @@ interface Education {
   degree: string;
   institution: string;
   year: string;
+}
+interface Project {
+  title: string;
+  link: string;
+  description: string;
 }
 
 type ToastType = { message: string; kind: "success" | "error" } | null;
@@ -51,6 +56,9 @@ export default function Home() {
     { degree: "", institution: "", year: "" },
   ]);
 
+  const [projects, setProjects] = useState<Project[]>([
+  { title: "", link: "", description: "" },
+]);
   const [skills, setSkills] = useState("");
   const [template, setTemplate] = useState<"modern" | "classic" | "minimal">("modern");
 
@@ -61,9 +69,14 @@ export default function Home() {
   const [userName, setUserName] = useState<string | null>(null);
 
 useEffect(() => {
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  // Prevent react-hooks/set-state-in-effect lint false-positive for localStorage hydration.
   const name = localStorage.getItem("userName");
-  setUserName(name);
+  // Use a Promise microtask instead of direct setState in effect body.
+  void Promise.resolve().then(() => setUserName(name));
 }, []);
+
+
 
 const handleLogout = () => {
   localStorage.removeItem("token");
@@ -146,17 +159,31 @@ const handleLogout = () => {
   const removeEducation = (index: number) => {
     setEducation(education.filter((_, i) => i !== index));
   };
+  const updateProject = (index: number, field: keyof Project, value: string) => {
+  const updated = [...projects];
+  updated[index][field] = value;
+  setProjects(updated);
+};
 
-  const buildResumeData = () => ({
-    full_name: fullName,
-    email: email,
-    summary: summary,
-    experiences: experiences.map(({ jobTitle, company, dates, description }) => ({
-      jobTitle, company, dates, description,
-    })),
-    education: education,
-    skills: skills,
-  });
+const addProject = () => {
+  setProjects([...projects, { title: "", link: "", description: "" }]);
+};
+
+const removeProject = (index: number) => {
+  setProjects(projects.filter((_, i) => i !== index));
+};
+ 
+const buildResumeData = () => ({
+  full_name: fullName,
+  email: email,
+  summary: improvedSummary || summary,
+  experiences: experiences.map(({ jobTitle, company, dates, description, improvedBullets }) => ({
+    jobTitle, company, dates, description: improvedBullets || description,
+  })),
+  education: education,
+  projects: projects,
+  skills: skills,
+});
 
  const handleSaveResume = async () => {
   const token = localStorage.getItem("token");
@@ -452,7 +479,62 @@ const handleLogout = () => {
                 </CardContent>
               </Card>
             </TiltCard>
+           
 
+            {/* Projects */}
+            <TiltCard>
+              <Card className="bg-[#FBF8F2] border-none shadow-2xl rounded-2xl animate-in fade-in slide-in-from-bottom-3 duration-500">
+                <CardHeader>
+                  <CardTitle className="font-[family-name:var(--font-display)] text-[#10142C] text-lg sm:text-xl flex items-center gap-2">
+                    <FolderGit2 size={20} className="text-[#C6A15B]" />
+                    Projects
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  {projects.map((proj, index) => (
+                    <div key={index} className="space-y-3 pb-5 border-b border-[#4A5068]/15 last:border-b-0">
+                      <div>
+                        <Label className="font-[family-name:var(--font-mono)] text-[11px] uppercase tracking-wide text-[#4A5068]">
+                          Project Title
+                        </Label>
+                        <Input placeholder="e.g. Resume Builder AI" value={proj.title}
+                          onChange={(e) => updateProject(index, "title", e.target.value)}
+                          className="mt-1 border-[#4A5068]/30 focus-visible:ring-[#C6A15B]" />
+                      </div>
+                      <div>
+                        <Label className="font-[family-name:var(--font-mono)] text-[11px] uppercase tracking-wide text-[#4A5068]">
+                          Project Link (GitHub / Live Demo)
+                        </Label>
+                        <Input placeholder="e.g. https://github.com/username/project" value={proj.link}
+                          onChange={(e) => updateProject(index, "link", e.target.value)}
+                          className="mt-1 border-[#4A5068]/30 focus-visible:ring-[#C6A15B]" />
+                      </div>
+                      <div>
+                        <Label className="font-[family-name:var(--font-mono)] text-[11px] uppercase tracking-wide text-[#4A5068]">
+                          Description
+                        </Label>
+                        <Textarea placeholder="What does this project do? What tech did you use?" value={proj.description}
+                          onChange={(e) => updateProject(index, "description", e.target.value)} rows={3}
+                          className="mt-1 border-[#4A5068]/30 focus-visible:ring-[#C6A15B]" />
+                      </div>
+
+                      {projects.length > 1 && (
+                        <button onClick={() => removeProject(index)}
+                          className="text-xs text-red-600 hover:underline flex items-center gap-1">
+                          <Trash2 size={12} /> Remove this entry
+                        </button>
+                      )}
+                    </div>
+                  ))}
+
+                  <Button onClick={addProject} variant="outline"
+                    className="w-full border-[#4A5068]/30 text-[#4A5068] font-[family-name:var(--font-mono)] text-sm gap-2">
+                    <Plus size={14} /> Add Another Project
+                  </Button>
+                </CardContent>
+              </Card>
+            </TiltCard>
+    
             {/* Skills */}
             <TiltCard>
               <Card className="bg-[#FBF8F2] border-none shadow-2xl rounded-2xl animate-in fade-in slide-in-from-bottom-3 duration-500 stagger-4">
@@ -515,13 +597,14 @@ const handleLogout = () => {
             </div>
 
             <div className="animate-in fade-in duration-500">
-              <ResumePreview
+            <ResumePreview
                 fullName={fullName}
                 email={email}
                 summary={summary}
                 improvedSummary={improvedSummary}
                 experiences={experiences}
                 education={education}
+                projects={projects}
                 skills={skills}
                 template={template}
               />

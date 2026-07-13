@@ -12,5 +12,6 @@ class Resume(Base):
     summary = Column(Text, nullable=True)
     experiences = Column(Text, nullable=True)
     education = Column(Text, nullable=True)
+    projects = Column(Text, nullable=True)
     skills = Column(String, nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow)

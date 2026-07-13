@@ -12,6 +12,12 @@ interface Education {
   year: string;
 }
 
+interface Project {
+  title: string;
+  link: string;
+  description: string;
+}
+
 interface ResumePreviewProps {
   fullName: string;
   email: string;
@@ -19,12 +25,13 @@ interface ResumePreviewProps {
   improvedSummary: string;
   experiences: Experience[];
   education: Education[];
+  projects?: Project[];
   skills: string;
   template: "modern" | "classic" | "minimal";
 }
 
 export function ResumePreview({
-  fullName, email, summary, improvedSummary, experiences, education, skills, template,
+  fullName, email, summary, improvedSummary, experiences, education, projects = [], skills, template,
 }: ResumePreviewProps) {
   const displaySummary = improvedSummary || summary;
 
@@ -61,6 +68,19 @@ export function ResumePreview({
             {education.map((edu, i) => edu.degree && (
               <div key={i} className="text-sm mb-1">
                 <span className="font-bold">{edu.degree}</span> — {edu.institution} ({edu.year})
+              </div>
+            ))}
+          </div>
+        )}
+        {projects.some((p) => p.title) && (
+          <div className="mb-4">
+            <h2 className="text-sm font-bold uppercase border-b border-black mb-1">Projects</h2>
+            {projects.map((proj, i) => proj.title && (
+              <div key={i} className="mb-2">
+                <div className="text-sm font-bold">
+                  {proj.title}{proj.link ? ` — ${proj.link}` : ""}
+                </div>
+                <p className="text-sm">{proj.description}</p>
               </div>
             ))}
           </div>
@@ -104,6 +124,20 @@ export function ResumePreview({
               <p key={i} className="text-sm border-l-2 border-gray-300 pl-4 mb-1">
                 {edu.degree} · {edu.institution} · {edu.year}
               </p>
+            ))}
+          </div>
+        )}
+        {projects.some((p) => p.title) && (
+          <div className="mb-6">
+            <h2 className="text-xs uppercase tracking-widest text-gray-400 mb-2">Projects</h2>
+            {projects.map((proj, i) => proj.title && (
+              <div key={i} className="mb-3 border-l-2 border-gray-300 pl-4">
+                <p className="text-sm font-medium">
+                  {proj.title}
+                  {proj.link && <span className="text-gray-400 font-normal"> · {proj.link}</span>}
+                </p>
+                <p className="text-sm text-gray-600">{proj.description}</p>
+              </div>
             ))}
           </div>
         )}
@@ -158,6 +192,24 @@ export function ResumePreview({
               <p key={i} className="text-sm text-gray-700 mb-1">
                 <span className="font-semibold">{edu.degree}</span> — {edu.institution} ({edu.year})
               </p>
+            ))}
+          </div>
+        )}
+        {projects.some((p) => p.title) && (
+          <div className="mb-5">
+            <h2 className="text-xs uppercase tracking-widest text-[#C6A15B] font-semibold mb-2 pb-1 border-b border-[#C6A15B]/30">
+              Projects
+            </h2>
+            {projects.map((proj, i) => proj.title && (
+              <div key={i} className="mb-3">
+                <p className="text-sm font-semibold text-[#10142C]">
+                  {proj.title}
+                  {proj.link && (
+                    <span className="text-[#C6A15B] font-normal text-xs ml-2">{proj.link}</span>
+                  )}
+                </p>
+                <p className="text-sm text-gray-600 mt-1">{proj.description}</p>
+              </div>
             ))}
           </div>
         )}

@@ -11,6 +11,8 @@ def clean_text(text: str) -> str:
     }
     for old, new in replacements.items():
         text = text.replace(old, new)
+    # Safety net: strip any remaining character the PDF font can't render
+    text = text.encode("latin-1", errors="replace").decode("latin-1")
     return text
 
 
@@ -20,7 +22,6 @@ def generate_resume_pdf(data) -> bytes:
     pdf.set_auto_page_break(auto=True, margin=15)
     pdf.set_margins(left=18, top=15, right=18)
 
-    # --- Name & Contact (plain text, no header/footer tricks) ---
     pdf.set_font("Helvetica", "B", 18)
     pdf.cell(0, 9, clean_text(data.full_name), ln=True)
 
@@ -37,14 +38,12 @@ def generate_resume_pdf(data) -> bytes:
         pdf.line(pdf.get_x(), pdf.get_y(), pdf.w - pdf.r_margin, pdf.get_y())
         pdf.ln(3)
 
-    # --- Professional Summary ---
     if data.summary:
         section_heading("Professional Summary")
         pdf.set_font("Helvetica", "", 10.5)
         pdf.multi_cell(0, 5.5, clean_text(data.summary))
         pdf.ln(4)
 
-    # --- Work Experience ---
     if data.experiences and any(e.jobTitle for e in data.experiences):
         section_heading("Work Experience")
         for exp in data.experiences:
@@ -68,7 +67,6 @@ def generate_resume_pdf(data) -> bytes:
                 pdf.multi_cell(0, 5.5, line)
             pdf.ln(3)
 
-    # --- Education ---
     if data.education and any(e.degree for e in data.education):
         section_heading("Education")
         for edu in data.education:
@@ -81,7 +79,20 @@ def generate_resume_pdf(data) -> bytes:
             pdf.ln(2)
         pdf.ln(2)
 
-    # --- Skills ---
+    if data.projects and any(p.title for p in data.projects):
+        section_heading("Projects")
+        for proj in data.projects:
+            if not proj.title:
+                continue
+            pdf.set_font("Helvetica", "B", 11)
+            title_line = clean_text(proj.title)
+            if proj.link:
+                title_line += f" - {clean_text(proj.link)}"
+            pdf.cell(0, 6, title_line, ln=True)
+            pdf.set_font("Helvetica", "", 10)
+            pdf.multi_cell(0, 5.5, clean_text(proj.description))
+            pdf.ln(3)
+
     if data.skills:
         section_heading("Skills")
         pdf.set_font("Helvetica", "", 10)

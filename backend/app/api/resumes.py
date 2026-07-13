@@ -67,6 +67,7 @@ def save_resume(data: ResumeData, db: Session = Depends(get_db), current_user: U
         summary=data.summary,
         experiences=json.dumps([e.dict() for e in data.experiences]),
         education=json.dumps([e.dict() for e in data.education]),
+        projects=json.dumps([p.dict() for p in data.projects]),
         skills=data.skills,
     )
     db.add(resume)
@@ -101,6 +102,7 @@ def get_resume(resume_id: int, db: Session = Depends(get_db), current_user: User
         "summary": resume.summary,
         "experiences": json.loads(resume.experiences) if resume.experiences else [],
         "education": json.loads(resume.education) if resume.education else [],
+        "projects": json.loads(resume.projects) if resume.projects else [],
         "skills": resume.skills,
     }
 
