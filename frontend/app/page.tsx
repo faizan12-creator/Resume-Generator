@@ -15,6 +15,8 @@ import {
   Plus, Trash2, Loader2, CheckCircle2, XCircle, LogIn, LogOut, FolderGit2,
 } from "lucide-react";
 
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
+
 const fraunces = Fraunces({ subsets: ["latin"], weight: ["500", "600"], style: ["normal", "italic"], variable: "--font-display" });
 const inter = Inter({ subsets: ["latin"], variable: "--font-body" });
 const mono = JetBrains_Mono({ subsets: ["latin"], weight: ["400", "500"], variable: "--font-mono" });
@@ -57,8 +59,8 @@ export default function Home() {
   ]);
 
   const [projects, setProjects] = useState<Project[]>([
-  { title: "", link: "", description: "" },
-]);
+    { title: "", link: "", description: "" },
+  ]);
   const [skills, setSkills] = useState("");
   const [template, setTemplate] = useState<"modern" | "classic" | "minimal">("modern");
 
@@ -68,23 +70,18 @@ export default function Home() {
 
   const [userName, setUserName] = useState<string | null>(null);
 
-useEffect(() => {
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  // Prevent react-hooks/set-state-in-effect lint false-positive for localStorage hydration.
-  const name = localStorage.getItem("userName");
-  // Use a Promise microtask instead of direct setState in effect body.
-  void Promise.resolve().then(() => setUserName(name));
-}, []);
+  useEffect(() => {
+    const name = localStorage.getItem("userName");
+    setUserName(name);
+  }, []);
 
-
-
-const handleLogout = () => {
-  localStorage.removeItem("token");
-  localStorage.removeItem("userName");
-  localStorage.removeItem("userEmail");
-  setUserName(null);
-  setToast({ message: "Logged out", kind: "success" });
-};
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("userName");
+    localStorage.removeItem("userEmail");
+    setUserName(null);
+    setToast({ message: "Logged out", kind: "success" });
+  };
 
   useEffect(() => {
     if (toast) {
@@ -96,7 +93,7 @@ const handleLogout = () => {
   const handleGenerateSummary = async () => {
     setLoadingSummary(true);
     try {
-      const response = await fetch("http://127.0.0.1:8000/api/generate-summary", {
+      const response = await fetch(`${API_URL}/api/generate-summary`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ full_name: fullName, summary: summary }),
@@ -115,7 +112,7 @@ const handleLogout = () => {
     setLoadingBulletIndex(index);
     try {
       const exp = experiences[index];
-      const response = await fetch("http://127.0.0.1:8000/api/generate-bullets", {
+      const response = await fetch(`${API_URL}/api/generate-bullets`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ job_title: exp.jobTitle, description: exp.description }),
@@ -159,61 +156,62 @@ const handleLogout = () => {
   const removeEducation = (index: number) => {
     setEducation(education.filter((_, i) => i !== index));
   };
+
   const updateProject = (index: number, field: keyof Project, value: string) => {
-  const updated = [...projects];
-  updated[index][field] = value;
-  setProjects(updated);
-};
+    const updated = [...projects];
+    updated[index][field] = value;
+    setProjects(updated);
+  };
 
-const addProject = () => {
-  setProjects([...projects, { title: "", link: "", description: "" }]);
-};
+  const addProject = () => {
+    setProjects([...projects, { title: "", link: "", description: "" }]);
+  };
 
-const removeProject = (index: number) => {
-  setProjects(projects.filter((_, i) => i !== index));
-};
- 
-const buildResumeData = () => ({
-  full_name: fullName,
-  email: email,
-  summary: improvedSummary || summary,
-  experiences: experiences.map(({ jobTitle, company, dates, description, improvedBullets }) => ({
-    jobTitle, company, dates, description: improvedBullets || description,
-  })),
-  education: education,
-  projects: projects,
-  skills: skills,
-});
+  const removeProject = (index: number) => {
+    setProjects(projects.filter((_, i) => i !== index));
+  };
 
- const handleSaveResume = async () => {
-  const token = localStorage.getItem("token");
-  if (!token) {
-    setToast({ message: "Please log in to save your resume", kind: "error" });
-    return;
-  }
-  setSaving(true);
-  try {
-    const response = await fetch("http://127.0.0.1:8000/api/resumes", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${token}`,
-      },
-      body: JSON.stringify(buildResumeData()),
-    });
-    const data = await response.json();
-    setToast({ message: `Saved! Resume ID: ${data.id}`, kind: "success" });
-  } catch (error) {
-    console.error(error);
-    setToast({ message: "Could not save resume", kind: "error" });
-  }
-  setSaving(false);
-};
+  const buildResumeData = () => ({
+    full_name: fullName,
+    email: email,
+    summary: improvedSummary || summary,
+    experiences: experiences.map(({ jobTitle, company, dates, description, improvedBullets }) => ({
+      jobTitle, company, dates, description: improvedBullets || description,
+    })),
+    education: education,
+    projects: projects,
+    skills: skills,
+  });
+
+  const handleSaveResume = async () => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      setToast({ message: "Please log in to save your resume", kind: "error" });
+      return;
+    }
+    setSaving(true);
+    try {
+      const response = await fetch(`${API_URL}/api/resumes`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+        },
+        body: JSON.stringify(buildResumeData()),
+      });
+      const data = await response.json();
+      setToast({ message: `Saved! Resume ID: ${data.id}`, kind: "success" });
+    } catch (error) {
+      console.error(error);
+      setToast({ message: "Could not save resume", kind: "error" });
+    }
+    setSaving(false);
+  };
 
   const handleDownloadPdf = async () => {
     setDownloading(true);
     try {
-      const response = await fetch("http://127.0.0.1:8000/api/generate-pdf", {
+      const response = await fetch(`${API_URL}/api/generate-pdf`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(buildResumeData()),
@@ -479,7 +477,6 @@ const buildResumeData = () => ({
                 </CardContent>
               </Card>
             </TiltCard>
-           
 
             {/* Projects */}
             <TiltCard>
@@ -534,7 +531,7 @@ const buildResumeData = () => ({
                 </CardContent>
               </Card>
             </TiltCard>
-    
+
             {/* Skills */}
             <TiltCard>
               <Card className="bg-[#FBF8F2] border-none shadow-2xl rounded-2xl animate-in fade-in slide-in-from-bottom-3 duration-500 stagger-4">
@@ -556,7 +553,7 @@ const buildResumeData = () => ({
             </TiltCard>
 
             <TiltCard>
-            <Card className="bg-[#FBF8F2] border-none shadow-2xl rounded-2xl animate-in fade-in slide-in-from-bottom-3 duration-500 stagger-5">              
+              <Card className="bg-[#FBF8F2] border-none shadow-2xl rounded-2xl animate-in fade-in slide-in-from-bottom-3 duration-500 stagger-5">
                 <CardContent className="pt-6 space-y-3">
                   <Button onClick={handleDownloadPdf} disabled={downloading}
                     className="w-full bg-[#C6A15B] hover:bg-[#b8934e] text-[#10142C] font-[family-name:var(--font-mono)] tracking-wide gap-2">
@@ -597,7 +594,7 @@ const buildResumeData = () => ({
             </div>
 
             <div className="animate-in fade-in duration-500">
-            <ResumePreview
+              <ResumePreview
                 fullName={fullName}
                 email={email}
                 summary={summary}

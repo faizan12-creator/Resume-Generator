@@ -8,6 +8,8 @@ import { Button } from "@/components/ui/button";
 import { TiltCard } from "@/components/ui/TiltCard";
 import { FolderOpen, Trash2, Loader2, Mail, Calendar } from "lucide-react";
 
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
+
 const fraunces = Fraunces({ subsets: ["latin"], weight: ["500", "600"], style: ["normal", "italic"], variable: "--font-display" });
 const inter = Inter({ subsets: ["latin"], variable: "--font-body" });
 const mono = JetBrains_Mono({ subsets: ["latin"], weight: ["400", "500"], variable: "--font-mono" });
@@ -24,44 +26,44 @@ export default function SavedResumesPage() {
   const [loading, setLoading] = useState(true);
   const [deletingId, setDeletingId] = useState<number | null>(null);
 
- const fetchResumes = async () => {
-  const token = localStorage.getItem("token");
-  if (!token) {
+  const fetchResumes = async () => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      setLoading(false);
+      return;
+    }
+    setLoading(true);
+    try {
+      const response = await fetch(`${API_URL}/api/resumes`, {
+        headers: { "Authorization": `Bearer ${token}` },
+      });
+      const data = await response.json();
+      setResumes(Array.isArray(data) ? data : []);
+    } catch (error) {
+      console.error(error);
+    }
     setLoading(false);
-    return;
-  }
-  setLoading(true);
-  try {
-    const response = await fetch("http://127.0.0.1:8000/api/resumes", {
-      headers: { "Authorization": `Bearer ${token}` },
-    });
-    const data = await response.json();
-    setResumes(Array.isArray(data) ? data : []);
-  } catch (error) {
-    console.error(error);
-  }
-  setLoading(false);
-};
+  };
 
   useEffect(() => {
     fetchResumes();
   }, []);
 
- const handleDelete = async (id: number) => {
-  const token = localStorage.getItem("token");
-  setDeletingId(id);
-  try {
-    await fetch(`http://127.0.0.1:8000/api/resumes/${id}`, {
-      method: "DELETE",
-      headers: { "Authorization": `Bearer ${token}` },
-    });
-    setResumes(resumes.filter((r) => r.id !== id));
-  } catch (error) {
-    console.error(error);
-    alert("Could not delete resume.");
-  }
-  setDeletingId(null);
-};
+  const handleDelete = async (id: number) => {
+    const token = localStorage.getItem("token");
+    setDeletingId(id);
+    try {
+      await fetch(`${API_URL}/api/resumes/${id}`, {
+        method: "DELETE",
+        headers: { "Authorization": `Bearer ${token}` },
+      });
+      setResumes(resumes.filter((r) => r.id !== id));
+    } catch (error) {
+      console.error(error);
+      alert("Could not delete resume.");
+    }
+    setDeletingId(null);
+  };
 
   const formatDate = (dateStr: string) => {
     if (!dateStr) return "";
