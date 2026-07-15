@@ -25,3 +25,4 @@ class ResumeData(BaseModel):
     education: List[EducationItem] = []
     projects: List[ProjectItem] = []
     skills: Optional[str] = ""
+    template: Optional[str] = "modern"

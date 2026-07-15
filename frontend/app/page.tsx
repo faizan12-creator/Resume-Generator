@@ -172,16 +172,17 @@ export default function Home() {
   };
 
   const buildResumeData = () => ({
-    full_name: fullName,
-    email: email,
-    summary: improvedSummary || summary,
-    experiences: experiences.map(({ jobTitle, company, dates, description, improvedBullets }) => ({
-      jobTitle, company, dates, description: improvedBullets || description,
-    })),
-    education: education,
-    projects: projects,
-    skills: skills,
-  });
+  full_name: fullName,
+  email: email,
+  summary: improvedSummary || summary,
+  experiences: experiences.map(({ jobTitle, company, dates, description, improvedBullets }) => ({
+    jobTitle, company, dates, description: improvedBullets || description,
+  })),
+  education: education,
+  projects: projects,
+  skills: skills,
+  template: template,
+});
 
   const handleSaveResume = async () => {
     const token = localStorage.getItem("token");
