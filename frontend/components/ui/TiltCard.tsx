@@ -1,12 +1,19 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 
 export function TiltCard({ children }: { children: React.ReactNode }) {
   const ref = useRef<HTMLDivElement>(null);
   const [style, setStyle] = useState({});
+  const [isTouchDevice, setIsTouchDevice] = useState(false);
+
+  useEffect(() => {
+    const checkTouch = window.matchMedia("(hover: none), (pointer: coarse)").matches;
+    setIsTouchDevice(checkTouch);
+  }, []);
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (isTouchDevice) return;
     const el = ref.current;
     if (!el) return;
     const rect = el.getBoundingClientRect();
@@ -22,8 +29,14 @@ export function TiltCard({ children }: { children: React.ReactNode }) {
   };
 
   const handleMouseLeave = () => {
+    if (isTouchDevice) return;
     setStyle({ transform: "perspective(1200px) rotateX(0deg) rotateY(0deg)" });
   };
+
+  if (isTouchDevice) {
+    // On touch devices, skip the tilt effect entirely and render plain
+    return <div className="relative">{children}</div>;
+  }
 
   return (
     <div className="relative">

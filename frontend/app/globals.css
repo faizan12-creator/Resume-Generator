@@ -148,6 +148,12 @@ body {
   animation: bg-drift 20s ease-in-out infinite;
   min-height: 100vh;
 }
+@media (max-width: 768px) {
+  body {
+    animation: none;
+    background-size: 100% 100%;
+  }
+}
 
 @keyframes bg-drift {
   0%, 100% { background-position: 0% 0%, 100% 100%, 50% 0%; }
