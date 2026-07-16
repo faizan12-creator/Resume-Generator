@@ -6,8 +6,7 @@ A full-stack AI-powered platform that helps job seekers build professional, ATS-
 
 Enterprise-style interface featuring **live resume previews, AI content polishing, PDF export, secure authentication, and ATS scoring** — built end-to-end with Next.js and FastAPI.
 
-**🔗 Live Demo:** [your-vercel-url.vercel.app](#) <!-- replace with your actual Vercel URL -->
-
+**🔗 Live Demo:** https://resume-generator-knuawnf41-faizan12-creators-projects.vercel.app/
 ---
 
 ## ✨ Features
