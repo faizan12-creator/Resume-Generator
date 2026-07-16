@@ -69,27 +69,30 @@ def generate_resume_pdf(data) -> bytes:
     pdf.set_auto_page_break(auto=True, margin=15)
     pdf.set_margins(left=18, top=15, right=18)
 
+    contact_parts = [p for p in [data.email, data.github, data.linkedin] if p]
+    contact_line = "  |  ".join(contact_parts)
+
     if theme["header_box"]:
         box_color = theme["header_box"]
         pdf.set_fill_color(*box_color)
-        pdf.rect(0, 0, pdf.w, 30, "F")
+        pdf.rect(0, 0, pdf.w, 32, "F")
         pdf.set_xy(18, 8)
         pdf.set_text_color(255, 255, 255)
         pdf.set_font(font, "B", 18)
         pdf.cell(0, 9, clean_text(data.full_name), ln=True)
         pdf.set_x(18)
         pdf.set_text_color(*accent)
-        pdf.set_font(font, "", 10)
-        if data.email:
-            pdf.cell(0, 6, clean_text(data.email), ln=True)
+        pdf.set_font(font, "", 9.5)
+        if contact_line:
+            pdf.cell(0, 6, clean_text(contact_line), ln=True)
         pdf.set_text_color(0, 0, 0)
-        pdf.set_y(38)
+        pdf.set_y(40)
     else:
         pdf.set_font(font, "B", 20 if theme["name_align"] == "C" else 18)
         pdf.cell(0, 9, clean_text(data.full_name), ln=True, align=theme["name_align"])
-        pdf.set_font(font, "", 10)
-        if data.email:
-            pdf.cell(0, 6, clean_text(data.email), ln=True, align=theme["name_align"])
+        pdf.set_font(font, "", 9.5)
+        if contact_line:
+            pdf.cell(0, 6, clean_text(contact_line), ln=True, align=theme["name_align"])
         pdf.ln(2)
         if theme["heading_style"] == "underline_caps":
             pdf.set_draw_color(0, 0, 0)

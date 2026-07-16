@@ -20,6 +20,8 @@ class ProjectItem(BaseModel):
 class ResumeData(BaseModel):
     full_name: str
     email: Optional[str] = ""
+    github: Optional[str] = ""
+    linkedin: Optional[str] = ""
     summary: Optional[str] = ""
     experiences: List[ExperienceItem] = []
     education: List[EducationItem] = []

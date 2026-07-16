@@ -21,6 +21,8 @@ interface Project {
 interface ResumePreviewProps {
   fullName: string;
   email: string;
+  github?: string;
+  linkedin?: string;
   summary: string;
   improvedSummary: string;
   experiences: Experience[];
@@ -31,9 +33,11 @@ interface ResumePreviewProps {
 }
 
 export function ResumePreview({
-  fullName, email, summary, improvedSummary, experiences, education, projects = [], skills, template,
+  fullName, email, github = "", linkedin = "", summary, improvedSummary,
+  experiences, education, projects = [], skills, template,
 }: ResumePreviewProps) {
   const displaySummary = improvedSummary || summary;
+  const contactLine = [github, linkedin].filter(Boolean).join("  |  ");
 
   if (template === "classic") {
     return (
@@ -41,6 +45,7 @@ export function ResumePreview({
         <div className="text-center border-b-2 border-black pb-3 mb-4">
           <h1 className="text-2xl font-bold uppercase tracking-wide">{fullName || "Your Name"}</h1>
           <p className="text-sm mt-1">{email || "your.email@example.com"}</p>
+          {contactLine && <p className="text-xs text-gray-500 mt-0.5">{contactLine}</p>}
         </div>
         {displaySummary && (
           <div className="mb-4">
@@ -99,7 +104,9 @@ export function ResumePreview({
     return (
       <div className="bg-white text-gray-800 p-8 shadow-2xl rounded-sm min-h-[600px] font-sans">
         <h1 className="text-3xl font-light mb-1">{fullName || "Your Name"}</h1>
-        <p className="text-sm text-gray-500 mb-6">{email || "your.email@example.com"}</p>
+        <p className="text-sm text-gray-500">{email || "your.email@example.com"}</p>
+        {contactLine && <p className="text-xs text-gray-400 mb-6">{contactLine}</p>}
+        {!contactLine && <div className="mb-6" />}
         {displaySummary && (
           <p className="text-sm text-gray-700 leading-relaxed mb-6 border-l-2 border-gray-300 pl-4">
             {displaySummary}
@@ -157,6 +164,7 @@ export function ResumePreview({
       <div className="bg-[#10142C] text-white p-6">
         <h1 className="text-2xl font-semibold">{fullName || "Your Name"}</h1>
         <p className="text-sm text-[#C6A15B] mt-1">{email || "your.email@example.com"}</p>
+        {contactLine && <p className="text-xs text-[#C6A15B]/70 mt-0.5">{contactLine}</p>}
       </div>
       <div className="p-6">
         {displaySummary && (

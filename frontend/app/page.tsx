@@ -45,6 +45,8 @@ type ToastType = { message: string; kind: "success" | "error" } | null;
 export default function Home() {
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
+  const [github, setGithub] = useState("");
+  const [linkedin, setLinkedin] = useState("");
   const [summary, setSummary] = useState("");
   const [improvedSummary, setImprovedSummary] = useState("");
   const [loadingSummary, setLoadingSummary] = useState(false);
@@ -174,6 +176,8 @@ export default function Home() {
   const buildResumeData = () => ({
   full_name: fullName,
   email: email,
+  github: github,
+  linkedin: linkedin,
   summary: improvedSummary || summary,
   experiences: experiences.map(({ jobTitle, company, dates, description, improvedBullets }) => ({
     jobTitle, company, dates, description: improvedBullets || description,
@@ -306,6 +310,24 @@ export default function Home() {
                     <Input type="email" placeholder="e.g. faizan@example.com" value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       className="mt-1 border-[#4A5068]/30 focus-visible:ring-[#C6A15B]" />
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                      <Label className="font-[family-name:var(--font-mono)] text-[11px] uppercase tracking-wide text-[#4A5068]">
+                        GitHub
+                      </Label>
+                      <Input placeholder="github.com/username" value={github}
+                        onChange={(e) => setGithub(e.target.value)}
+                        className="mt-1 border-[#4A5068]/30 focus-visible:ring-[#C6A15B]" />
+                    </div>
+                    <div>
+                      <Label className="font-[family-name:var(--font-mono)] text-[11px] uppercase tracking-wide text-[#4A5068]">
+                        LinkedIn
+                      </Label>
+                      <Input placeholder="linkedin.com/in/username" value={linkedin}
+                        onChange={(e) => setLinkedin(e.target.value)}
+                        className="mt-1 border-[#4A5068]/30 focus-visible:ring-[#C6A15B]" />
+                    </div>
                   </div>
 
                   <div>
@@ -598,6 +620,8 @@ export default function Home() {
               <ResumePreview
                 fullName={fullName}
                 email={email}
+                github={github}
+                linkedin={linkedin}
                 summary={summary}
                 improvedSummary={improvedSummary}
                 experiences={experiences}
