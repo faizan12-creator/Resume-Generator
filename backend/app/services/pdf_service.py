@@ -69,7 +69,14 @@ def generate_resume_pdf(data) -> bytes:
     pdf.set_auto_page_break(auto=True, margin=15)
     pdf.set_margins(left=18, top=15, right=18)
 
-    contact_parts = [p for p in [data.email, data.github, data.linkedin] if p]
+    def clean_handle(url: str) -> str:
+        if not url:
+            return ""
+        url = url.replace("https://", "").replace("http://", "").replace("www.", "")
+        url = url.replace("github.com/", "").replace("linkedin.com/in/", "").replace("linkedin.com/", "")
+        return url.rstrip("/")
+
+    contact_parts = [p for p in [data.email, clean_handle(data.github), clean_handle(data.linkedin)] if p]
     contact_line = "  |  ".join(contact_parts)
 
     if theme["header_box"]:
