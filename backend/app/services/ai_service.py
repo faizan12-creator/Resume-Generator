@@ -17,7 +17,7 @@ User's input: {raw_summary}
 Return only the improved summary text, no extra explanation."""
 
     response = client.chat.completions.create(
-        model="  openai/gpt-oss-120b",
+        model="openai/gpt-oss-120b",
         max_tokens=300,
         messages=[{"role": "user", "content": prompt}]
     )
@@ -36,7 +36,7 @@ User's input: {raw_description}
 Return only the bullet points (each line starting with "- "), no extra explanation."""
 
     response = client.chat.completions.create(
-        model="  openai/gpt-oss-120b",
+        model="openai/gpt-oss-120b",
         max_tokens=300,
         messages=[{"role": "user", "content": prompt}]
     )
@@ -56,7 +56,7 @@ Return only the cover letter text (no subject line, no extra explanation). Keep 
 professional, confident, and under 250 words."""
 
     response = client.chat.completions.create(
-        model="  openai/gpt-oss-120b",
+        model="openai/gpt-oss-120b",
         max_tokens=500,
         messages=[{"role": "user", "content": prompt}]
     )
